@@ -18,6 +18,7 @@ import LocationPicker from '../components/LocationPicker';
 const NewPlaceScreen = (props) => {
   const [titleValue, setTitleValue] = useState('');
   const [selectedImageUri, setSelectedImageUri] = useState();
+  const [selectedLocation, setSelectedLocation] = useState();
 
   const titleChangeHandler = useCallback((text) => {
     setTitleValue(text);
@@ -27,11 +28,17 @@ const NewPlaceScreen = (props) => {
 
   const savePlaceHandler = async () => {
     console.log(`Saving place: ${titleValue}`);
-    await dispatch(placesActions.addPlace(titleValue, selectedImageUri));
+    await dispatch(
+      placesActions.addPlace(titleValue, selectedImageUri, selectedLocation)
+    );
     props.navigation.goBack();
   };
 
   const imageTakenHandler = (uri) => setSelectedImageUri(uri);
+  const locationPickedHandler = useCallback((location) => {
+    console.log('locationPickedHandler', location);
+    setSelectedLocation(location);
+  }, []);
 
   return (
     <ScrollView>
@@ -43,7 +50,10 @@ const NewPlaceScreen = (props) => {
           onChangeText={titleChangeHandler}
         />
         <ImagePicker onImageTake={imageTakenHandler} />
-        <LocationPicker />
+        <LocationPicker
+          navigation={props.navigation}
+          onLocationPicked={locationPickedHandler}
+        />
         <Button
           title="Save Place"
           color={Colors.primary}

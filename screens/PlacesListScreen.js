@@ -17,7 +17,7 @@ const renderItem =
       <PlaceItem
         title={item.title}
         image={item.imageUri}
-        address={null}
+        address={item.address}
         onSelect={() =>
           navigate('PlaceDetail', { placeTitle: item.title, placeId: item.id })
         }

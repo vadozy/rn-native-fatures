@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 import { GOOGLE_MAPS_API_KEY } from '../env-private';
 
@@ -12,13 +12,16 @@ const MapPreview = (props) => {
   }
 
   return (
-    <View style={{ ...styles.mapPreview, ...props.style }}>
+    <TouchableOpacity
+      onPress={props.onPress}
+      style={{ ...styles.mapPreview, ...props.style }}
+    >
       {props.location ? (
         <Image style={styles.mapImage} source={{ uri: imagePreviewUrl }} />
       ) : (
         props.children
       )}
-    </View>
+    </TouchableOpacity>
   );
 };
 

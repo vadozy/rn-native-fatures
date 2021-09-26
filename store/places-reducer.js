@@ -10,9 +10,12 @@ export default function (state = initialState, action) {
     case ADD_PLACE: {
       const newPlaces = [...state.places];
       const place = new Place(
-        action.placeData.id,
+        action.placeData.id.toString(),
         action.placeData.title,
-        action.placeData.imageUri
+        action.placeData.imageUri,
+        action.placeData.address,
+        action.placeData.coords.lat,
+        action.placeData.coords.lng
       );
       newPlaces.push(place);
       return {
@@ -23,7 +26,15 @@ export default function (state = initialState, action) {
     case SET_PLACES: {
       const places = action.places;
       const newPlaces = places.map(
-        (p) => new Place(p.id.toString(), p.title, p.imageUri)
+        (p) =>
+          new Place(
+            p.id.toString(),
+            p.title,
+            p.imageUri,
+            p.address,
+            p.lat,
+            p.lng
+          )
       );
       return {
         ...state,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,6 +15,13 @@ import * as Location from 'expo-location';
 const LocationPicker = (props) => {
   const [location, setLocation] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+
+  const mapPickedLocation = props.navigation.getParam('pickedLocation');
+
+  useEffect(() => {
+    setLocation(mapPickedLocation);
+    props.onLocationPicked(mapPickedLocation);
+  }, [mapPickedLocation?.lat, mapPickedLocation?.lng, props.onLocationPicked]);
 
   const verifyPermissions = async () => {
     if (Platform.OS !== 'web') {
@@ -46,6 +53,10 @@ const LocationPicker = (props) => {
       setIsFetching(true);
       const loc = await Location.getCurrentPositionAsync();
       setLocation({ lat: loc.coords.latitude, lng: loc.coords.longitude });
+      props.onLocationPicked({
+        lat: loc.coords.latitude,
+        lng: loc.coords.longitude,
+      });
     } catch (err) {
       Alert.alert(
         'Could not get location',
@@ -57,20 +68,35 @@ const LocationPicker = (props) => {
     }
   };
 
+  const pickOnMapHandler = () => {
+    props.navigation.navigate('Map');
+  };
+
   return (
     <View style={styles.locationPicker}>
-      <MapPreview location={location} style={styles.mapPreview}>
+      <MapPreview
+        onPress={pickOnMapHandler}
+        location={location}
+        style={styles.mapPreview}
+      >
         {isFetching ? (
           <ActivityIndicator size="large" color={Colors.primary} />
         ) : (
           <Text>{text}</Text>
         )}
       </MapPreview>
-      <Button
-        title="Get User Location"
-        color={Colors.primary}
-        onPress={getLocationHandler}
-      />
+      <View style={styles.actions}>
+        <Button
+          title="Get User Location"
+          color={Colors.primary}
+          onPress={getLocationHandler}
+        />
+        <Button
+          title="Pick on Map"
+          color={Colors.primary}
+          onPress={pickOnMapHandler}
+        />
+      </View>
     </View>
   );
 };
@@ -87,5 +113,10 @@ const styles = StyleSheet.create({
     height: 150,
     borderColor: '#ccc',
     borderWidth: 1,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
   },
 });
